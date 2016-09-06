@@ -25,7 +25,7 @@
 # #@Gaetan
 # #@date 05092016
 # ###################
-#
+
 import socket
 import threading
 
@@ -34,15 +34,24 @@ import threading
 def handle_client(client_socket):
     request = client_socket.recv(2048)
     print "[*] Received: %s" % request
-    response = raw_input("what you want to say ?\n")
-    client_socket.send(response)
-    client_socket.close()
+    response = raw_input("\n\rWhat you want to say ?\n\rSay [quit] to quit\n\r")
+
+    if user_exit(response):
+        client_socket.send('User wants to exit')
+        client_socket.close()
+    else :
+        client_socket.send(response)
+        client_socket.close()
+
+def user_exit(msg):
+    return msg == 'quit'
 
 ##      SCRIPT         ##
 
 bind_ip = "127.0.0.1"
 bind_port = 8080
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind((bind_ip,bind_port))
 server.listen(5)
 print "[*] listening on %s:%d" %(bind_ip,bind_port)
